@@ -56,6 +56,17 @@ if (!function_exists('array_to_string')) {
   }
 }
 
+if (!function_exists('array_delta')) {
+  function array_delta(
+    array $array1,
+    array $array2,
+    array $ignoreKeys = [],
+    callable $compare = null,
+  ): array {
+    return Utils::arrayDelta(...func_get_args());
+  }
+}
+
 if (!function_exists('excel_date_to_php_date')) {
   function excel_date_to_php_date(?int $excelDate = null): ?string
   {

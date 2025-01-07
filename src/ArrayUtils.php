@@ -93,7 +93,67 @@ trait ArrayUtils
     return $output;
   }
 
+  /**
+   * Calculates the delta(changes) between two arrays.
+   *
+   * @param array $array1 The first array.
+   * @param array $array2 The second array.
+   * @param array $ignoreKeys An array of keys to ignore when comparing.
+   * @param callable|null $compare A callable function used to compare values.
+   *
+   * @return array An associative array of 'added', 'removed', and 'modified' changes.
+   */
+  public static function arrayDelta(
+    array $array1,
+    array $array2,
+    array $ignoreKeys = [],
+    callable $compare = null,
+    array $path = [],
+  ): array {
+    $compare ??= fn($v1, $v2) => $v1 !== $v2;
+    $changes = [];
 
+    // Early exit if both arrays are empty
+    if (empty($array1) && empty($array2)) {
+      return $changes;
+    }
+
+    // Process all keys from both arrays
+    foreach (array_unique([...array_keys($array1), ...array_keys($array2)]) as $key) {
+      $currentPath = [...$path, $key];
+      $currentPathStr = implode('.', $currentPath);
+
+      if (in_array($currentPathStr, $ignoreKeys)) {
+        continue;
+      }
+
+      if (!array_key_exists($key, $array1)) {
+        $changes['added'][$currentPathStr] = $array2[$key];
+      } elseif (!array_key_exists($key, $array2)) {
+        $changes['removed'][$currentPathStr] = $array1[$key];
+      } elseif (is_array($array1[$key]) && is_array($array2[$key])) {
+        $result = self::arrayDelta(
+          $array1[$key],
+          $array2[$key],
+          $ignoreKeys,
+          $compare,
+          $currentPath
+        );
+        foreach (['added', 'modified', 'removed'] as $type) {
+          if (!empty($result[$type])) {
+            $changes[$type] = [...$changes[$type] ?? [], ...$result[$type]];
+          }
+        }
+      } elseif ($compare($array1[$key], $array2[$key])) {
+        $changes['modified'][$currentPathStr] = [
+          'before' => $array1[$key],
+          'after' => $array2[$key]
+        ];
+      }
+    }
+
+    return array_filter($changes);
+  }
 
   /**
    * Calculates the delta(changes) between two arrays.
@@ -109,7 +169,7 @@ trait ArrayUtils
    *     - 'removed': An array of keys and their values removed from $array1.
    *     - 'modified': An array of keys and their before/after values.
    */
-  public static function arrayDelta(
+  public static function arrayDeltaOld(
     array $array1,
     array $array2,
     array $ignoreKeys = [],

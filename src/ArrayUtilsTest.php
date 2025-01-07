@@ -37,7 +37,7 @@ it('can transform the keys in an array', function (
 
 it(
   'computes the delta(changes) in $array1 by $array2',
-  function ($array1, $array2, $expected = [], $ignoreKeys = [], $compare = null) {
+  function ($array1 = [], $array2 = [], $expected = [], $ignoreKeys = [], $compare = null) {
     expect(array_delta(
       array1: $array1,
       array2: $array2,
@@ -47,27 +47,19 @@ it(
   }
 )->with([
 
-  // Test No: Description
-  [
-    // $array1,
-    // $array2,
-    // $expected,
-    // $ignoreKeys,
-    // $compare,
-  ],
+  // Test 0: Empty Arrays
+  [],
 
   // Test 1: No Changes
   [
     ['foo' => 'bar', 'baz' => 123],
     ['foo' => 'bar', 'baz' => 123],
-    [],
   ],
 
   // Test 2: No Changes even with nested arrays
   [
     ['foo' => 'bar', 'baz' => 123, 'nested' => ['a' => 1, 'b' => 2]],
     ['foo' => 'bar', 'baz' => 123, 'nested' => ['a' => 1, 'b' => 2]],
-    [],
   ],
 
   // Test 3: Simple Addition
@@ -88,141 +80,55 @@ it(
   [
     ['foo' => 'bar',],
     ['foo' => 'baz',],
-    [
-      'modified' => ['foo' => ['before' => 'bar', 'after' => 'baz',],],
-    ],
+    ['modified' => ['foo' => ['before' => 'bar', 'after' => 'baz']]],
   ],
 
   // Test 6: Nested Addition
   [
     ['foo' => ['bar' => 'baz',],],
     ['foo' => ['bar' => 'baz', 'new' => 'value',],],
-    ['added' => ['foo.new' => 'value',],],
+    ['added' => ['foo.new' => 'value']],
   ],
 
   // Test 7: Nested Removal
   [
-    [
-      'foo' => [
-        'bar' => 'baz',
-        'old' => 'value',
-      ],
-    ],
-    [
-      'foo' => [
-        'bar' => 'baz',
-      ],
-    ],
-    [
-      'added' => [],
-      'removed' => [
-        'foo.old' => 'value',
-      ],
-      'modified' => [],
-    ],
-    [],
-    null,
+    ['foo' => ['bar' => 'baz', 'old' => 'value']],
+    ['foo' => ['bar' => 'baz']],
+    ['removed' => ['foo.old' => 'value']],
   ],
 
   // Test 8: Nested Modification
   [
-    [
-      'foo' => [
-        'bar' => 'baz',
-      ],
-    ],
-    [
-      'foo' => [
-        'bar' => 'qux',
-      ],
-    ],
-    [
-      'added' => [],
-      'removed' => [],
-      'modified' => [
-        'foo.bar' => [
-          'before' => 'baz',
-          'after' => 'qux',
-        ],
-      ],
-    ],
-    [],
-    null,
+    ['foo' => ['bar' => 'baz',],],
+    ['foo' => ['bar' => 'qux',],],
+    ['modified' => ['foo.bar' => ['before' => 'baz', 'after' => 'qux']]],
   ],
 
   // Test 9: Ignore Keys
   [
-    [
-      'foo' => 'bar',
-      'bar' => 'baz',
-    ],
-    [
-      'foo' => 'bar',
-      'bar' => 'qux',
-    ],
-    [
-      'added' => [],
-      'removed' => [],
-      'modified' => [],
-    ],
-    [
-      'bar',
-    ],
-    null,
+    ['foo' => 'bar', 'bar' => 'baz'],
+    ['foo' => 'bar', 'bar' => 'qux'],
+    [],
+    ['bar'],
   ],
 
   // Test 10: Ignore Nested Keys
   [
-    [
-      'foo' => [
-        'bar' => 'baz',
-      ],
-    ],
-    [
-      'foo' => [
-        'bar' => 'qux',
-      ],
-    ],
-    [
-      'added' => [],
-      'removed' => [],
-      'modified' => [],
-    ],
-    [
-      'foo.bar',
-    ],
-    null,
+    ['foo' => ['bar' => 'baz']],
+    ['foo' => ['bar' => 'qux']],
+    [],
+    ['foo.bar'],
   ],
 
   // Test 11: Custom Compare Function (Case-Insensitive)
   [
-    [
-      'foo' => 'Bar',
-    ],
-    [
-      'foo' => 'bar',
-    ],
-    [
-      'added' => [],
-      'removed' => [],
-      'modified' => [],
-    ],
+    ['foo' => 'Bar'],
+    ['foo' => 'bar'],
+    [],
     [],
     function ($value1, $value2) {
       return strtolower($value1) !== strtolower($value2);
     },
   ],
 
-  // Test 12: Empty Arrays
-  [
-    [],
-    [],
-    [
-      'added' => [],
-      'removed' => [],
-      'modified' => [],
-    ],
-    [],
-    null,
-  ]
 ]);

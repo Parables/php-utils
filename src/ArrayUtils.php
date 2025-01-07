@@ -114,6 +114,7 @@ trait ArrayUtils
     array $array2,
     array $ignoreKeys = [],
     callable $compare = null,
+    array $path = [],
   ): array {
     $changes = [];
 
@@ -126,95 +127,67 @@ trait ArrayUtils
       return $changes;
     }
 
-    // Early exit: If only one array is empty, all elements in the non-empty array are added/removed
-    if (empty($array1)) {
-      foreach ($array2 as $key => $value) {
-        $currentPath = [$key];
-        $currentPathStr = implode('.', $currentPath);
-        if (!in_array($currentPathStr, $ignoreKeys)) {
-          $changes['added'][$currentPathStr] = $value;
-        }
+    foreach ($array1 as $key => $value) {
+      $currentPath = array_merge($path, [$key]);
+      $currentPathStr = implode('.', $currentPath);
+
+      if (in_array($currentPathStr, $ignoreKeys)) {
+        continue; // Skip keys that should be ignored
       }
-      return $changes;
-    }
 
-    if (empty($array2)) {
-      foreach ($array1 as $key => $value) {
-        $currentPath = [$key];
-        $currentPathStr = implode('.', $currentPath);
-        if (!in_array($currentPathStr, $ignoreKeys)) {
-          $changes['removed'][$currentPathStr] = $value;
-        }
-      }
-      return $changes;
-    }
-
-    function traverse(
-      array $array1,
-      array $array2,
-      array $path = [],
-      array $ignoreKeys = [],
-      callable $compare,
-      array &$changes,
-    ) {
-      foreach ($array1 as $key => $value) {
-        $currentPath = array_merge($path, [$key]);
-        $currentPathStr = implode('.', $currentPath);
-
-        if (in_array($currentPathStr, $ignoreKeys)) {
-          continue; // Skip keys that should be ignored
-        }
-
-        if (!array_key_exists($key, $array2)) {
-          $changes['removed'][$currentPathStr] = $value;
-        } elseif (is_array($value) && is_array($array2[$key])) {
-          traverse(
+      if (!array_key_exists($key, $array2)) {
+        $changes['removed'][$currentPathStr] = $value;
+      } elseif (is_array($value) && is_array($array2[$key])) {
+        $result =
+          self::arrayDelta(
             array1: $array1[$key],
             array2: $array2[$key],
-            path: $currentPath,
             ignoreKeys: $ignoreKeys,
             compare: $compare,
-            changes: $changes,
-          );
-        } elseif ($compare($value, $array2[$key])) {
-          $changes['modified'][$currentPathStr] = [
-            'before' => $value,
-            'after' => $array2[$key]
-          ];
-        }
-      }
-
-      foreach ($array2 as $key => $value) {
-        $currentPath = array_merge($path, [$key]);
-        $currentPathStr = implode('.', $currentPath);
-
-        if (in_array($currentPathStr, $ignoreKeys)) {
-          continue; // Skip keys that should be ignored
-        }
-
-        if (!array_key_exists($key, $array1)) {
-          $changes['added'][$currentPathStr] = $value;
-        } elseif (is_array($value) && is_array($array1[$key])) {
-          traverse(
-            array1: $array1[$key],
-            array2: $value,
             path: $currentPath,
-            ignoreKeys: $ignoreKeys,
-            compare: $compare,
-            changes: $changes,
           );
-        }
+
+        $changes = [
+          'added' => array_merge($changes['added'] ?? [], $result['added'] ?? []),
+          'modified' => array_merge($changes['modified'] ?? [], $result['modified'] ?? []),
+          'removed' => array_merge($changes['removed'] ?? [], $result['removed'] ?? []),
+        ];
+      } elseif ($compare($value, $array2[$key])) {
+        $changes['modified'][$currentPathStr] = [
+          'before' => $value,
+          'after' => $array2[$key]
+        ];
       }
-    };
+    }
 
-    traverse(
-      array1: $array1,
-      array2: $array2,
-      ignoreKeys: $ignoreKeys,
-      compare: $compare,
-      changes: $changes,
-    );
+    foreach ($array2 as $key => $value) {
+      $currentPath = array_merge($path, [$key]);
+      $currentPathStr = implode('.', $currentPath);
 
-    return $changes;
+      if (in_array($currentPathStr, $ignoreKeys)) {
+        continue; // Skip keys that should be ignored
+      }
+
+      if (!array_key_exists($key, $array1)) {
+        $changes['added'][$currentPathStr] = $value;
+      } elseif (is_array($value) && is_array($array1[$key])) {
+        $result = self::arrayDelta(
+          array1: $array1[$key],
+          array2: $value,
+          ignoreKeys: $ignoreKeys,
+          compare: $compare,
+          path: $currentPath,
+        );
+
+        $changes = [
+          'added' => array_merge($changes['added'] ?? [], $result['added'] ?? []),
+          'modified' => array_merge($changes['modified'] ?? [], $result['modified'] ?? []),
+          'removed' => array_merge($changes['removed'] ?? [], $result['removed'] ?? []),
+        ];
+      }
+    }
+
+
+    return array_filter($changes);
   }
 }

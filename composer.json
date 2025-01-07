@@ -1,36 +1,37 @@
 {
-  "name": "parables/php-utils",
-  "description": "a set of frequently used helper functions",
-  "type": "library",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Parables",
-      "email": "38154990+Parables@users.noreply.github.com"
-    }
-  ],
-  "scripts": {
-    "changelog": "conventional-changelog",
-    "release": "conventional-changelog --commit",
-    "release:patch": "conventional-changelog --patch --commit",
-    "release:minor": "conventional-changelog --minor --commit",
-    "release:major": "conventional-changelog --major --commit"
-  },
-  "autoload": {
-    "files": [
-      "utils/Helper.php"
+    "name": "parables/php-utils",
+    "description": "a set of frequently used helper functions",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Parables",
+            "email": "38154990+Parables@users.noreply.github.com"
+        }
     ],
-    "psr-4": {
-      "Parables\\Utils\\": "src/"
-    }
-  },
-  "config": {
-    "allow-plugins": {
-      "pestphp/pest-plugin": true
-    }
-  },
-  "require-dev": {
-    "marcocesarato/php-conventional-changelog": "^1.17",
-    "pestphp/pest": "^2.33"
-  }
+    "scripts": {
+        "changelog": "conventional-changelog",
+        "release": "conventional-changelog --commit",
+        "release:patch": "conventional-changelog --patch --commit",
+        "release:minor": "conventional-changelog --minor --commit",
+        "release:major": "conventional-changelog --major --commit"
+    },
+    "autoload": {
+        "files": [
+            "utils/Helper.php"
+        ],
+        "psr-4": {
+            "Parables\\Utils\\": "src/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "require-dev": {
+        "marcocesarato/php-conventional-changelog": "^1.17",
+        "pestphp/pest": "^2.33"
+    },
+    "version": "0.1.0"
 }

@@ -33,5 +33,5 @@
         "marcocesarato/php-conventional-changelog": "^1.17",
         "pestphp/pest": "^2.33"
     },
-    "version": "0.1.0"
+    "version": "0.1.1"
 }

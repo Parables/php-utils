@@ -4,6 +4,18 @@
 All notable changes to this project will be documented in this file.
 <!--- END HEADER -->
 
+## [0.1.1](https://github.com/Parables/php-utils/compare/v0.1.0...v0.1.1) (2025-01-08)
+
+### Bug Fixes
+
+
+##### String-utils
+
+* Fixed snake_case output ([290d40](https://github.com/Parables/php-utils/commit/290d40c756086cb45cc02206910f61905af7b466))
+
+
+---
+
 ## [0.1.0](https://github.com/Parables/php-utils/compare/v0.0.1...v0.1.0) (2025-01-07)
 
 ### Features

@@ -2,6 +2,10 @@
 
 namespace Parables\Utils;
 
+it('can slugify', function () {
+  expect(slugify("WelcomeVisitor"))->toBe('Welcome-Visitor');
+});
+
 it('can normalize the whitespace in a string', function ($input, $output) {
   expect(Utils::normalizeWhitespace(string: $input))->toBe($output);
 })->with([
@@ -39,8 +43,6 @@ it(
     ['hElLo Wor&ld', 'HelloWorld'],
     ['hElLo% @World&123', 'HelloWorld123'],
     ['hElLo_ - _ Wor^&ld', 'HelloWorld'],
-    /*
-        */
   ]
 );
 
@@ -117,7 +119,6 @@ it(
   }
 )->with(
   [
-
     ['hello world', 'hello-world'],
     ['HELLO WORLD', 'h-e-l-l-o-w-o-r-l-d'],
     [strtolower('HELLO WORLD'), 'hello-world'],

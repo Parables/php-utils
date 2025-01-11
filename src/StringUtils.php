@@ -9,8 +9,12 @@ trait StringUtils
     return preg_replace('/\s+/', ' ', trim($string));
   }
 
-  public static function slugify(string $string = '', bool $toLowerCase = true): string
+  public static function slugify(string $string = '', bool $toLowerCase = false): string
   {
+    $string = implode(separator: '-', array: preg_split(
+      pattern: '/(?=[A-Z])/',
+      subject: $string,
+    ));
     $string = preg_replace('/[^a-zA-Z0-9\s\-\_]/', '', $string);
     $string = str_replace(' ', '-', $string);
     $string = preg_replace('/[-_]+/', '-', $string);
@@ -65,12 +69,12 @@ trait StringUtils
 
   public static function snakeCase(string $string = ''): string
   {
-    return preg_replace('/[-_]+/', '_', slugify($string));
+    return preg_replace('/[-_]+/', '_', slugify(string: $string, toLowerCase: true));
   }
 
   public static function kebabCase(string $string): string
   {
-    return str_replace(search: '_', replace: '-', subject: self::snakeCase($string));
+    return slugify(string: $string, toLowerCase: true);
   }
 
   public static function isUrl(string $url = ''): bool

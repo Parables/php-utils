@@ -107,7 +107,7 @@ trait ArrayUtils
     array $array1,
     array $array2,
     array $ignoreKeys = [],
-    callable $compare = null,
+    callable|null $compare = null,
     array $path = [],
   ): array {
     $compare ??= fn($v1, $v2) => $v1 !== $v2;

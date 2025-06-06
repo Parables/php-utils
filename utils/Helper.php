@@ -61,14 +61,14 @@ if (!function_exists('array_delta')) {
     array $array1,
     array $array2,
     array $ignoreKeys = [],
-    callable $compare = null,
+    callable|null $compare = null,
   ): array {
     return Utils::arrayDelta(...func_get_args());
   }
 }
 
 if (!function_exists('excel_date_to_php_date')) {
-  function excel_date_to_php_date(?int $excelDate = null): ?string
+  function excel_date_to_php_date(int|null $excelDate = null): ?string
   {
     return Utils::excelDateToPhpDate(...func_get_args());
   }
